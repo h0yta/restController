@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testng-results ignored="0" total="1" passed="1" failed="0" skipped="0">
+<testng-results skipped="0" failed="0" ignored="0" total="4" passed="4">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2018-07-30T18:11:21Z" name="Default suite" finished-at="2018-07-30T18:11:21Z" duration-ms="42">
+  <suite name="Default suite" duration-ms="48" started-at="2018-07-30T21:15:41Z" finished-at="2018-07-30T21:15:41Z">
     <groups>
     </groups>
-    <test started-at="2018-07-30T18:11:21Z" name="Default test" finished-at="2018-07-30T18:11:21Z" duration-ms="42">
+    <test name="Default test" duration-ms="48" started-at="2018-07-30T21:15:41Z" finished-at="2018-07-30T21:15:41Z">
       <class name="se.tornroth.airdc.AirDCResourceTest">
-        <test-method signature="getSeriesDownload()[pri:0, instance:se.tornroth.airdc.AirDCResourceTest@c86b9e3]" started-at="2018-07-30T18:11:21Z" name="getSeriesDownload" finished-at="2018-07-30T18:11:21Z" duration-ms="12" status="PASS">
+        <test-method status="PASS" signature="getMultipleEpisodeDownload()[pri:0, instance:se.tornroth.airdc.AirDCResourceTest@548a9f61]" name="getMultipleEpisodeDownload" duration-ms="12" started-at="2018-07-30T21:15:41Z" finished-at="2018-07-30T21:15:41Z">
           <reporter-output>
           </reporter-output>
-        </test-method> <!-- getSeriesDownload -->
+        </test-method> <!-- getMultipleEpisodeDownload -->
+        <test-method status="PASS" signature="getSingleEpisodeDownload()[pri:0, instance:se.tornroth.airdc.AirDCResourceTest@548a9f61]" name="getSingleEpisodeDownload" duration-ms="2" started-at="2018-07-30T21:15:41Z" finished-at="2018-07-30T21:15:41Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- getSingleEpisodeDownload -->
+        <test-method status="PASS" signature="requestIsMultipleEpisode()[pri:0, instance:se.tornroth.airdc.AirDCResourceTest@548a9f61]" name="requestIsMultipleEpisode" duration-ms="2" started-at="2018-07-30T21:15:41Z" finished-at="2018-07-30T21:15:41Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- requestIsMultipleEpisode -->
+        <test-method status="PASS" signature="requestIsSingleEpisode()[pri:0, instance:se.tornroth.airdc.AirDCResourceTest@548a9f61]" name="requestIsSingleEpisode" duration-ms="1" started-at="2018-07-30T21:15:41Z" finished-at="2018-07-30T21:15:41Z">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- requestIsSingleEpisode -->
       </class> <!-- se.tornroth.airdc.AirDCResourceTest -->
     </test> <!-- Default test -->
   </suite> <!-- Default suite -->
