@@ -7,7 +7,7 @@ public class Download {
 	private final String toEpisode;
 
 	public Download(String title) {
-		this.title = title;
+		this.title = title.trim();
 		this.season = null;
 		this.fromEpisode = null;
 		toEpisode = null;
@@ -21,10 +21,10 @@ public class Download {
 	}
 
 	public Download(String title, String season, String fromEpisode, String toEpisode) {
-		this.title = title;
-		this.season = season;
-		this.fromEpisode = fromEpisode;
-		this.toEpisode = toEpisode;
+		this.title = title.trim();
+		this.season = season.trim();
+		this.fromEpisode = fromEpisode.trim();
+		this.toEpisode = toEpisode.trim();
 	}
 
 	public String getTitle() {
