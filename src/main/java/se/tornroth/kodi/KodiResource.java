@@ -3,8 +3,10 @@ package se.tornroth.kodi;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 import com.google.gson.Gson;
 
@@ -42,6 +44,19 @@ public class KodiResource {
 	public String stop() {
 		List<String> result = kodiPlayerService.stop();
 		return new Gson().toJson(result);
+	}
+
+	@POST
+	@Path("episode/play/{location}/{item}")
+	public void playEpisde(@PathParam("location") String location, @PathParam("item") String request) {
+		System.out.println(location + " -> " + request);
+		kodiLibaryService.playEpisode(location, request);
+	}
+
+	@POST
+	@Path("movie/play/{item}")
+	public void playMovie(@PathParam("item") String request) {
+		kodiLibaryService.playMovie(request);
 	}
 
 	@PUT
