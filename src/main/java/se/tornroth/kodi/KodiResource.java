@@ -54,9 +54,10 @@ public class KodiResource {
 	}
 
 	@POST
-	@Path("movie/play/{item}")
-	public void playMovie(@PathParam("item") String request) {
-		kodiLibaryService.playMovie(request);
+	@Path("movie/play/{location}/{item}")
+	public void playMovie(@PathParam("location") String location, @PathParam("item") String request) {
+		System.out.println(location + " -> " + request);
+		kodiLibaryService.playMovie(location, request);
 	}
 
 	@PUT

@@ -1,14 +1,14 @@
 package se.tornroth.kodi.entity;
 
 public class RequestedTvshow {
-	private final Type type;
+	private final RequestType type;
 	private final Mediaplayer mediaplayer;
 	private final String title;
 	private final String season;
 	private final String episode;
 	private final String episodeTitle;
 
-	public RequestedTvshow(Type type, Mediaplayer mediaplayer, String title) {
+	public RequestedTvshow(RequestType type, Mediaplayer mediaplayer, String title) {
 		this.type = type;
 		this.mediaplayer = mediaplayer;
 		this.title = title.trim();
@@ -17,7 +17,7 @@ public class RequestedTvshow {
 		this.episodeTitle = null;
 	}
 
-	public RequestedTvshow(Type type, Mediaplayer mediaplayer, String title, String season, String episode) {
+	public RequestedTvshow(RequestType type, Mediaplayer mediaplayer, String title, String season, String episode) {
 		this.type = type;
 		this.mediaplayer = mediaplayer;
 		this.title = title.trim();
@@ -26,7 +26,7 @@ public class RequestedTvshow {
 		this.episodeTitle = null;
 	}
 
-	public RequestedTvshow(Type type, Mediaplayer mediaplayer, String title, String episodeTitle) {
+	public RequestedTvshow(RequestType type, Mediaplayer mediaplayer, String title, String episodeTitle) {
 		this.type = type;
 		this.mediaplayer = mediaplayer;
 		this.title = title.trim();
@@ -35,7 +35,7 @@ public class RequestedTvshow {
 		this.episodeTitle = episodeTitle.trim();
 	}
 
-	public Type getType() {
+	public RequestType getType() {
 		return type;
 	}
 
@@ -65,14 +65,6 @@ public class RequestedTvshow {
 		}
 
 		return "";
-	}
-
-	public enum Type {
-		SPECIFIC_EPISODE, EPISODE_TITLE, LATEST_EPISODE, NEXT_EPISODE, RANDOM_EPISODE;
-	}
-
-	public enum Mediaplayer {
-		BASEMENT, LIVINGROOM;
 	}
 
 	@Override

@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import info.debatty.java.stringsimilarity.NormalizedLevenshtein;
-import se.tornroth.kodi.entity.RequestedTvshow.Mediaplayer;
+import se.tornroth.kodi.entity.Mediaplayer;
 
 public class KodiUtils {
 	private static Map<String, String> translatedTitles;
@@ -47,7 +47,7 @@ public class KodiUtils {
 				.replace("episode", "");
 	}
 
-	public static Mediaplayer findMediaplayer(String location) {
+	public static se.tornroth.kodi.entity.Mediaplayer findMediaplayer(String location) {
 		if (location.toUpperCase().equals("BASEMENT")) {
 			return Mediaplayer.BASEMENT;
 		} else if (location.toUpperCase().equals("LIVINGROOM")) {
