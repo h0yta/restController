@@ -29,9 +29,13 @@ public class KodiUtils {
 	}
 
 	public static boolean simularEnough(String requested, String tvshow) {
+		return calculateSimularity(requested, tvshow) >= 0.83d;
+	}
+
+	public static double calculateSimularity(String requested, String tvshow) {
 		NormalizedLevenshtein l = new NormalizedLevenshtein();
-		double sim = l.distance(requested, tvshow);
-		return (1.0d - sim) >= 0.7d;
+		double sim = l.distance(requested.toLowerCase(), tvshow.toLowerCase());
+		return (1.0d - sim);
 	}
 
 	public static String stripRequest(String request) {
@@ -44,7 +48,9 @@ public class KodiUtils {
 				.replace("next", "").replace("random episode of", "")//
 				.replace("random episode", "")//
 				.replace("random", "")//
-				.replace("episode", "");
+				.replace("episode", "")//
+				.replace("movie", "")//
+				.trim();
 	}
 
 	public static se.tornroth.kodi.entity.Mediaplayer findMediaplayer(String location) {

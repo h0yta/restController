@@ -18,6 +18,7 @@ import com.google.gson.JsonParser;
 import se.tornroth.kodi.entity.Episode;
 import se.tornroth.kodi.entity.Mediaplayer;
 import se.tornroth.kodi.entity.Movie;
+import se.tornroth.kodi.entity.Playlist;
 import se.tornroth.kodi.entity.RequestType;
 import se.tornroth.kodi.entity.RequestedMovie;
 import se.tornroth.kodi.entity.RequestedTvshow;
@@ -26,6 +27,7 @@ import se.tornroth.kodi.entity.Tvshow;
 public class KodiLibaryService extends AbstractKodiService {
 
 	private static final List<String> SERVERS = Arrays.asList("http://192.168.1.204:80/jsonrpc");
+	private static final int NUMBER_OF_QUEUED_EPISODES = 6;
 
 	public List<String> scan() {
 		return SERVERS.stream().map(server -> {
@@ -41,21 +43,24 @@ public class KodiLibaryService extends AbstractKodiService {
 
 	public String playEpisode(String location, String request) {
 		RequestedTvshow requestedTvshow = getShowFromRequest(location, request);
+		if (requestedTvshow.getType() == RequestType.MOVIE) {
+			return playMovie(location, request);
+		}
+
 		Optional<Tvshow> matchedTvshow = findTvShow(requestedTvshow);
 
 		if (matchedTvshow.isPresent()) {
-			Optional<Episode> matchedEpisode = findEpisode(requestedTvshow, matchedTvshow);
-
-			if (matchedEpisode.isPresent()) {
-				return sendPlayEpisode(matchedEpisode.get());
+			List<Episode> matchedEpisodes = findEpisodes(requestedTvshow, matchedTvshow);
+			if (!matchedEpisodes.isEmpty()) {
+				return sendPlayEpisodes(matchedEpisodes);
 			}
 		}
 
-		System.out.println("Nothing to be played found for request: " + request);
+		System.out.println("Nothing to be played found for episode request: " + request);
 		return "ERROR";
 	}
 
-	public String playMovie(String location, String request) {
+	private String playMovie(String location, String request) {
 		RequestedMovie requestedMovie = getMovieFromRequest(location, request);
 		Optional<Movie> matchedMovie = findMovie(requestedMovie);
 
@@ -63,7 +68,7 @@ public class KodiLibaryService extends AbstractKodiService {
 			return sendPlayMovie(matchedMovie.get());
 		}
 
-		System.out.println("Nothing to be played found for request: " + request);
+		System.out.println("Nothing to be played found for movie request: " + request);
 		return "ERROR";
 	}
 
@@ -106,30 +111,50 @@ public class KodiLibaryService extends AbstractKodiService {
 		return tvshows;
 	}
 
-	private Optional<Episode> findEpisode(RequestedTvshow requestedTvshow, Optional<Tvshow> matchedTvshow) {
+	private List<Episode> findEpisodes(RequestedTvshow requestedTvshow, Optional<Tvshow> matchedTvshow) {
 		List<Episode> episodes = findEpisodes(matchedTvshow.get());
 
 		switch (requestedTvshow.getType()) {
 		case TITLE:
-			return episodes.stream().filter(episode -> {
+			Optional<Episode> titleMatch = episodes.stream().filter(episode -> {
 				return KodiUtils.simularEnough(requestedTvshow.getEpisodeTitle(), episode.findEpisodeTitle());
 			}).findFirst();
+
+			if (titleMatch.isPresent()) {
+				int index = episodes.indexOf(titleMatch.get());
+				return episodes.stream().skip(index).limit(NUMBER_OF_QUEUED_EPISODES).collect(Collectors.toList());
+			}
+
+			return Collections.emptyList();
 		case SPECIFIC:
-			return episodes.stream().filter(episode -> {
+			Optional<Episode> specificMatch = episodes.stream().filter(episode -> {
 				return episode.findSeasonAndEpisode().equals(requestedTvshow.getEpisodeDescShort());
 			}).findFirst();
+
+			if (specificMatch.isPresent()) {
+				int index = episodes.indexOf(specificMatch.get());
+				return episodes.stream().skip(index).limit(NUMBER_OF_QUEUED_EPISODES).collect(Collectors.toList());
+			}
+
+			return Collections.emptyList();
+		case RANDOM:
+			List<Episode> shuffled = new ArrayList<>(episodes);
+			Collections.shuffle(shuffled);
+
+			Optional<Episode> randomMatch = shuffled.stream().findFirst();
+
+			int index = episodes.indexOf(randomMatch.get());
+			return episodes.stream().skip(index).limit(NUMBER_OF_QUEUED_EPISODES).collect(Collectors.toList());
 		case LATEST:
 			return episodes.stream().filter(episode -> !episode.isWatched())
 					.sorted(Comparator.comparing(Episode::getSeason).thenComparing(Episode::getEpisode).reversed())
-					.findFirst();
+					.collect(Collectors.toList());
 		case NEXT:
 			return episodes.stream().filter(episode -> !episode.isWatched())
-					.sorted(Comparator.comparing(Episode::getSeason).thenComparing(Episode::getEpisode)).findFirst();
-		case RANDOM:
-			Collections.shuffle(episodes);
-			return episodes.stream().findFirst();
+					.sorted(Comparator.comparing(Episode::getSeason).thenComparing(Episode::getEpisode))
+					.collect(Collectors.toList());
 		default:
-			throw new IllegalArgumentException("Unknown type");
+			return Collections.emptyList();
 		}
 	}
 
@@ -196,6 +221,9 @@ public class KodiLibaryService extends AbstractKodiService {
 	protected static RequestedTvshow getShowFromRequest(String location, String request) {
 		if (requestIsSpecifiedEpisode(request)) {
 			return getShowFromSpecifiedEpisode(location, request);
+		} else if (requestIsMovie(request)) {
+			return new RequestedTvshow(RequestType.MOVIE, KodiUtils.findMediaplayer(location),
+					KodiUtils.stripRequest(request));
 		} else if (requestIsLatest(request)) {
 			return new RequestedTvshow(RequestType.LATEST, KodiUtils.findMediaplayer(location),
 					KodiUtils.stripRequest(request));
@@ -219,31 +247,37 @@ public class KodiLibaryService extends AbstractKodiService {
 
 	protected static boolean requestIsSpecifiedEpisode(String request) {
 		Pattern pattern = Pattern.compile("(.*)\\sseason\\s(\\d+)\\sepisode\\s(\\d+)");
-		Matcher matcher = pattern.matcher(request.trim());
+		Matcher matcher = pattern.matcher(request.toLowerCase().trim());
 		return matcher.matches();
 	}
 
 	protected static boolean requestIsEpisodeTitle(String request) {
 		Pattern pattern = Pattern.compile("(.*)\\sepisode\\s(.*)");
-		Matcher matcher = pattern.matcher(request.trim());
+		Matcher matcher = pattern.matcher(request.toLowerCase().trim());
 		return matcher.matches();
 	}
 
 	protected static boolean requestIsLatest(String request) {
 		Pattern pattern = Pattern.compile("^latest\\s(.*)");
-		Matcher matcher = pattern.matcher(request.trim());
+		Matcher matcher = pattern.matcher(request.toLowerCase().trim());
 		return matcher.matches();
 	}
 
 	protected static boolean requestIsNext(String request) {
 		Pattern pattern = Pattern.compile("^next\\s(.*)");
-		Matcher matcher = pattern.matcher(request.trim());
+		Matcher matcher = pattern.matcher(request.toLowerCase().trim());
 		return matcher.matches();
 	}
 
 	protected static boolean requestIsRandom(String request) {
 		Pattern pattern = Pattern.compile("^random\\s(.*)");
-		Matcher matcher = pattern.matcher(request.trim());
+		Matcher matcher = pattern.matcher(request.toLowerCase().trim());
+		return matcher.matches();
+	}
+
+	protected static boolean requestIsMovie(String request) {
+		Pattern pattern = Pattern.compile("^movie\\s(.*)");
+		Matcher matcher = pattern.matcher(request.toLowerCase().trim());
 		return matcher.matches();
 	}
 
@@ -288,6 +322,37 @@ public class KodiLibaryService extends AbstractKodiService {
 				+ "\"id\": \"kodiService\"}";
 
 		return sendPost(episode.getUrl(), payload);
+	}
+
+	private String sendPlayEpisodes(List<Episode> episodes) {
+		if (episodes.isEmpty()) {
+			return "Empty";
+		}
+
+		Playlist playlist = findPlaylists(episodes.stream().map(Episode::getUrl).findAny().get());
+		String playresult = sendPlayEpisode(episodes.stream().findFirst().get());
+
+		int position = 0;
+		for (Episode episode : episodes) {
+			String payload = "{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.Insert\", "//
+					+ "\"params\": { "//
+					+ "\"playlistid\": " + playlist.getPlaylistid() + ", "//
+					+ "\"position\": " + (position++) + ", "//
+					+ "\"item\": {\"episodeid\": " + episode.getEpisodeId() + "}},"//
+					+ "\"id\": \"kodiService\"}";
+			sendPost(episodes.stream().map(Episode::getUrl).findAny().get(), payload);
+		}
+
+		return playresult;
+	}
+
+	private Playlist findPlaylists(String url) {
+		String playlistsPaylod = "{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.GetPlaylists\", \"id\": \"kodiService\"}";
+
+		String playlists = sendPost(url, playlistsPaylod);
+		Optional<String> playlistid = findValueFromArray(playlists, "playlistid");
+
+		return new Playlist(url, playlistid.orElse(null));
 	}
 
 	private String sendPlayMovie(Movie movie) {
