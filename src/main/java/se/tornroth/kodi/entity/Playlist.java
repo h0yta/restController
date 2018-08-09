@@ -1,16 +1,16 @@
 package se.tornroth.kodi.entity;
 
 public class Playlist {
-	private final String url;
+	private final Mediaplayer mediaplayer;
 	private final String playlistid;
-	
-	public Playlist(String url, String playerid) {
-		this.url = url;
+
+	public Playlist(Mediaplayer mediaplayer, String playerid) {
+		this.mediaplayer = mediaplayer;
 		this.playlistid = playerid;
 	}
 
-	public String getUrl() {
-		return url;
+	public Mediaplayer getMediaplayer() {
+		return mediaplayer;
 	}
 
 	public String getPlaylistid() {
@@ -23,7 +23,7 @@ public class Playlist {
 
 	@Override
 	public String toString() {
-		return "Playlist [url=" + url + ", playlistid=" + playlistid + "]";
+		return "Playlist [url=" + mediaplayer + ", playlistid=" + playlistid + "]";
 	}
 
 }

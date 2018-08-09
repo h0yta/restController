@@ -1,7 +1,7 @@
 package se.tornroth.kodi.entity;
 
 public class Episode {
-	private final String url;
+	private final Mediaplayer mediaplayer;
 	private final Integer tvshowId;
 	private final Integer episodeId;
 	private final Integer season;
@@ -9,9 +9,9 @@ public class Episode {
 	private final String title;
 	private final boolean watched;
 
-	public Episode(String url, Integer tvshowid, Integer episodeId, Integer season, Integer episode, String title,
-			boolean watched) {
-		this.url = url;
+	public Episode(Mediaplayer mediaplayer, Integer tvshowid, Integer episodeId, Integer season, Integer episode,
+			String title, boolean watched) {
+		this.mediaplayer = mediaplayer;
 		this.tvshowId = tvshowid;
 		this.episodeId = episodeId;
 		this.title = title;
@@ -20,8 +20,8 @@ public class Episode {
 		this.watched = watched;
 	}
 
-	public String getUrl() {
-		return url;
+	public Mediaplayer getMediaplayer() {
+		return mediaplayer;
 	}
 
 	public Integer getTvshowId() {
@@ -58,8 +58,8 @@ public class Episode {
 
 	@Override
 	public String toString() {
-		return "Episode [url=" + url + ", tvshowId=" + tvshowId + ", episodeId=" + episodeId + ", season=" + season
-				+ ", episode=" + episode + ", title=" + title + ", watched=" + watched + "]";
+		return "Episode [mediaplayer=" + mediaplayer + ", tvshowId=" + tvshowId + ", episodeId=" + episodeId
+				+ ", season=" + season + ", episode=" + episode + ", title=" + title + ", watched=" + watched + "]";
 	}
 
 }

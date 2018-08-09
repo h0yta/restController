@@ -9,7 +9,7 @@ public class EpisodeTest {
 
 	@BeforeMethod
 	public void beforeMethod() {
-		sut = new Episode("", 1, 123, 2, 6, "2x06. Den flygande mattan: Del 1", false);
+		sut = new Episode(Mediaplayer.BASEMENT, 1, 123, 2, 6, "2x06. Den flygande mattan: Del 1", false);
 	}
 
 	@Test

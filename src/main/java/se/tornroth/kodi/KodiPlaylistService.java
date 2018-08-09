@@ -1,38 +1,87 @@
 package se.tornroth.kodi;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
+import se.tornroth.http.HttpService;
+import se.tornroth.kodi.entity.Episode;
+import se.tornroth.kodi.entity.Mediaplayer;
+import se.tornroth.kodi.entity.Movie;
 import se.tornroth.kodi.entity.Playlist;
 
 public class KodiPlaylistService extends AbstractKodiService {
 
-	private final static List<String> SERVERS = Arrays.asList("http://192.168.1.204:80/jsonrpc",
-			"http://192.168.1.205:80/jsonrpc");
+	@Inject
+	private HttpService httpService;
 
-	public List<String> clearPlaylist() {
-		List<Playlist> playlists = findPlaylists(SERVERS);
-		return playlists.stream().map(player -> {
-			return sendClearPlaylist(player.getUrl(), player.getPlaylistid());
-		}).collect(Collectors.toList());
+	public Optional<String> clearPlaylist(Mediaplayer mediaplayer) {
+		Playlist playlist = findPlaylists(mediaplayer);
+
+		return Optional.ofNullable(sendClearPlaylist(playlist));
 	}
 
-	private List<Playlist> findPlaylists(List<String> servers) {
+	public Playlist insertEpisodesToPlaylist(List<Episode> episodes) {
+		Playlist playlist = findPlaylists(episodes.stream().map(Episode::getMediaplayer).findAny().get());
+
+		int position = 0;
+		for (Episode episode : episodes) {
+			sendInsertIntoPlaylist(playlist, position++, "episodeid", episode.getEpisodeId());
+		}
+
+		return playlist;
+	}
+
+	public Playlist addEpisodesToPlaylist(List<Episode> episodes) {
+		Playlist playlist = findPlaylists(episodes.stream().map(Episode::getMediaplayer).findAny().get());
+
+		for (Episode episode : episodes) {
+			sendAddIntoPlaylist(playlist, "episodeid", episode.getEpisodeId());
+		}
+
+		return playlist;
+	}
+
+	public void addMoviesToPlaylist(List<Movie> movies) {
+		Playlist playlist = findPlaylists(movies.stream().map(Movie::getMediaplayer).findAny().get());
+		int position = 0;
+		for (Movie movie : movies) {
+			sendInsertIntoPlaylist(playlist, position++, "movieid", movie.getMovieId());
+		}
+	}
+
+	private Playlist findPlaylists(Mediaplayer mediaplayer) {
 		String playlistsPaylod = "{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.GetPlaylists\", \"id\": \"kodiService\"}";
-		return servers.stream().map(server -> {
-			String playlists = sendPost(server, playlistsPaylod);
+		String playlists = httpService.sendPost(mediaplayer.getUrl(), playlistsPaylod);
 
-			Optional<String> playlistid = findValueFromArray(playlists, "playlistid");
-			return new Playlist(server, playlistid.orElse(null));
-		}).filter(playlist -> playlist.hasPlaylistId()).collect(Collectors.toList());
+		Optional<String> playlistid = findValueFromArray(playlists, "playlistid");
+		return new Playlist(mediaplayer, playlistid.orElse(null));
 	}
 
-	private String sendClearPlaylist(String url, String playlistid) {
+	private String sendClearPlaylist(Playlist playlist) {
 		String payload = "{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.Clear\", " + "\"params\": { \"playlistid\": "
-				+ playlistid + "}, \"id\": \"kodiService\"}";
-		String result = sendPost(url, payload);
+				+ playlist.getPlaylistid() + "}, \"id\": \"kodiService\"}";
+		String result = httpService.sendPost(playlist.getMediaplayer().getUrl(), payload);
 		return result;
+	}
+
+	private String sendInsertIntoPlaylist(Playlist playlist, Integer position, String itemType, Integer itemId) {
+		String payload = "{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.Insert\", "//
+				+ "\"params\": { "//
+				+ "\"playlistid\": " + playlist.getPlaylistid() + ", "//
+				+ "\"position\": " + position + ", "//
+				+ "\"item\": {\"" + itemType + "\": " + itemId + "}},"//
+				+ "\"id\": \"kodiService\"}";
+		return httpService.sendPost(playlist.getMediaplayer().getUrl(), payload);
+	}
+
+	private String sendAddIntoPlaylist(Playlist playlist, String itemType, Integer itemId) {
+		String payload = "{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.Add\", "//
+				+ "\"params\": { "//
+				+ "\"playlistid\": " + playlist.getPlaylistid() + ", "//
+				+ "\"item\": {\"" + itemType + "\": " + itemId + "}},"//
+				+ "\"id\": \"kodiService\"}";
+		return httpService.sendPost(playlist.getMediaplayer().getUrl(), payload);
 	}
 }

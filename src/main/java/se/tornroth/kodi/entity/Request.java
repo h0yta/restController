@@ -1,6 +1,6 @@
 package se.tornroth.kodi.entity;
 
-public class RequestedTvshow {
+public class Request {
 	private final RequestType type;
 	private final Mediaplayer mediaplayer;
 	private final String title;
@@ -8,7 +8,7 @@ public class RequestedTvshow {
 	private final String episode;
 	private final String episodeTitle;
 
-	public RequestedTvshow(RequestType type, Mediaplayer mediaplayer, String title) {
+	public Request(RequestType type, Mediaplayer mediaplayer, String title) {
 		this.type = type;
 		this.mediaplayer = mediaplayer;
 		this.title = title.trim();
@@ -17,7 +17,7 @@ public class RequestedTvshow {
 		this.episodeTitle = null;
 	}
 
-	public RequestedTvshow(RequestType type, Mediaplayer mediaplayer, String title, String season, String episode) {
+	public Request(RequestType type, Mediaplayer mediaplayer, String title, String season, String episode) {
 		this.type = type;
 		this.mediaplayer = mediaplayer;
 		this.title = title.trim();
@@ -26,7 +26,7 @@ public class RequestedTvshow {
 		this.episodeTitle = null;
 	}
 
-	public RequestedTvshow(RequestType type, Mediaplayer mediaplayer, String title, String episodeTitle) {
+	public Request(RequestType type, Mediaplayer mediaplayer, String title, String episodeTitle) {
 		this.type = type;
 		this.mediaplayer = mediaplayer;
 		this.title = title.trim();

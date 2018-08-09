@@ -1,6 +1,6 @@
 package se.tornroth.kodi;
 
-import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.ws.rs.POST;
@@ -10,74 +10,80 @@ import javax.ws.rs.PathParam;
 
 import com.google.gson.Gson;
 
+import se.tornroth.kodi.entity.Mediaplayer;
+
 @Path("kodi")
 public class KodiResource {
 
 	@Inject
-	private KodiPlayerService kodiPlayerService;
-
-	@Inject
-	private KodiPlaylistService kodiPlaylistService;
-
-	@Inject
-	private KodiLibaryService kodiLibaryService;
-
-	@Inject
-	private KodiSystemService kodiSystemService;
+	private KodiService kodiService;
 
 	@PUT
-	@Path("pause")
-	public String pause() {
-		List<String> result = kodiPlayerService.pause();
-		return new Gson().toJson(result);
+	@Path("pause/{location}")
+	public String pause(@PathParam("location") String location) {
+		Optional<String> result = kodiService.pausePlayer(findMediaplayer(location));
+		return new Gson().toJson(createResponse(result));
 	}
 
 	@PUT
-	@Path("resume")
-	public String resume() {
-		List<String> result = kodiPlayerService.resume();
-		return new Gson().toJson(result);
+	@Path("resume/{location}")
+	public String resume(@PathParam("location") String location) {
+		Optional<String> result = kodiService.resumePlayer(findMediaplayer(location));
+		return new Gson().toJson(createResponse(result));
 	}
 
 	@PUT
-	@Path("stop")
-	public String stop() {
-		List<String> result = kodiPlayerService.stop();
-		return new Gson().toJson(result);
+	@Path("stop/{location}")
+	public String stop(@PathParam("location") String location) {
+		Optional<String> result = kodiService.stopPlayer(findMediaplayer(location));
+		return new Gson().toJson(createResponse(result));
 	}
 
 	@POST
 	@Path("play/{location}/{item}")
-	public void playEpisde(@PathParam("location") String location, @PathParam("item") String request) {
+	public String playEpisde(@PathParam("location") String location, @PathParam("item") String request) {
 		System.out.println(location + " -> " + request);
-		kodiLibaryService.playEpisode(location, request);
+		Optional<String> result = kodiService.play(findMediaplayer(location), request);
+		return new Gson().toJson(createResponse(result));
 	}
 
 	@PUT
 	@Path("clear")
-	public String clear() {
-		List<String> result = kodiPlaylistService.clearPlaylist();
-		return new Gson().toJson(result);
+	public String clear(@PathParam("location") String location) {
+		Optional<String> result = kodiService.clearPlaylist(findMediaplayer(location));
+		return new Gson().toJson(createResponse(result));
 	}
 
 	@PUT
 	@Path("scan")
 	public String scan() {
-		List<String> result = kodiLibaryService.scan();
-		return new Gson().toJson(result);
+		Optional<String> result = kodiService.scanLibrary();
+		return new Gson().toJson(createResponse(result));
 	}
 
 	@PUT
 	@Path("clean")
 	public String clean() {
-		List<String> result = kodiLibaryService.clean();
-		return new Gson().toJson(result);
+		Optional<String> result = kodiService.cleanLibrary();
+		return new Gson().toJson(createResponse(result));
 	}
 
 	@PUT
-	@Path("reboot")
-	public String reboot() {
-		List<String> result = kodiSystemService.reboot();
-		return new Gson().toJson(result);
+	@Path("reboot/{location}")
+	public String reboot(@PathParam("location") String location) {
+		Optional<String> result = kodiService.rebootSystem(findMediaplayer(location));
+		return new Gson().toJson(createResponse(result));
+	}
+
+	private Mediaplayer findMediaplayer(String player) {
+		return Mediaplayer.valueOf(player);
+	}
+
+	private String createResponse(Optional<String> result) {
+		if (result.isPresent()) {
+			return result.get();
+		}
+
+		return "Error";
 	}
 }
