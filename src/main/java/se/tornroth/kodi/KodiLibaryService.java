@@ -27,6 +27,9 @@ public class KodiLibaryService extends AbstractKodiService {
 	@Inject
 	private HttpService httpService;
 
+	@Inject
+	private TranslationHelper translationHelper;
+
 	private static final int NUMBER_OF_QUEUED_EPISODES = 6;
 
 	public Optional<String> scanLibrary(Mediaplayer mediaplayer) {
@@ -66,7 +69,7 @@ public class KodiLibaryService extends AbstractKodiService {
 				return true;
 			}
 
-			Optional<String> optTitle = KodiUtils.translateTitle(request.getTitle());
+			Optional<String> optTitle = translationHelper.translateTitle(request.getTitle());
 
 			if (optTitle.isPresent()) {
 				return KodiUtils.simularEnough(optTitle.get(), tvshow.getTitle());

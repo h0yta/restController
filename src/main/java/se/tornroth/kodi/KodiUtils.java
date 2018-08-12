@@ -1,31 +1,8 @@
 package se.tornroth.kodi;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 import info.debatty.java.stringsimilarity.NormalizedLevenshtein;
 
 public class KodiUtils {
-	private static Map<String, String> translatedTitles;
-
-	static {
-		translatedTitles = new HashMap<>();
-		translatedTitles.put("curious george", "nicke nyfiken");
-		translatedTitles.put("friends", "vänner");
-		translatedTitles.put("alfie atkins", "alfons åberg");
-
-	}
-
-	public static Optional<String> translateTitle(String title) {
-		if (translatedTitles.containsKey(title.toLowerCase())) {
-			return Optional.of(translatedTitles.get(title.toLowerCase()));
-		}
-
-		return translatedTitles.keySet().stream().filter(translatedTitle -> {
-			return simularEnough(translatedTitle, title);
-		}).findFirst();
-	}
 
 	public static boolean simularEnough(String requested, String tvshow) {
 		return calculateSimularity(requested, tvshow) >= 0.83d;

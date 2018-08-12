@@ -82,6 +82,13 @@ public class KodiResource {
 		return new Gson().toJson(createResponse(result));
 	}
 
+	@POST
+	@Path("translation/add/{req}/{translation}")
+	public String addTranslation(@PathParam("req") String req, @PathParam("translation") String translation) {
+		kodiService.addTranslation(req, translation);
+		return new Gson().toJson("OK");
+	}
+
 	private Mediaplayer findMediaplayer(String player) {
 		return Mediaplayer.valueOf(player);
 	}

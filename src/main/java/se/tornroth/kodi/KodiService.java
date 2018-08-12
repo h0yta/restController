@@ -24,6 +24,9 @@ public class KodiService {
 	@Inject
 	private RequestService requestService;
 
+	@Inject
+	private TranslationHelper translationHelper;
+
 	public Optional<String> pausePlayer(Mediaplayer mediaplayer) {
 		return kodiPlayerService.pausePlayer(mediaplayer);
 	}
@@ -55,5 +58,9 @@ public class KodiService {
 
 	public Optional<String> rebootSystem(Mediaplayer mediaplayer) {
 		return kodiSystemService.rebootSystem(mediaplayer);
+	}
+
+	public void addTranslation(String req, String translation) {
+		translationHelper.addTranslation(req, translation);
 	}
 }
