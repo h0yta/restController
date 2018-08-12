@@ -62,8 +62,7 @@ public class KodiPlaylistService extends AbstractKodiService {
 	private String sendClearPlaylist(Playlist playlist) {
 		String payload = "{\"jsonrpc\": \"2.0\", \"method\": \"Playlist.Clear\", " + "\"params\": { \"playlistid\": "
 				+ playlist.getPlaylistid() + "}, \"id\": \"kodiService\"}";
-		String result = httpService.sendPost(playlist.getMediaplayer().getUrl(), payload);
-		return result;
+		return httpService.sendPost(playlist.getMediaplayer().getUrl(), payload);
 	}
 
 	private String sendInsertIntoPlaylist(Playlist playlist, Integer position, String itemType, Integer itemId) {

@@ -21,6 +21,7 @@ public class KodiResource {
 	@PUT
 	@Path("pause/{location}")
 	public String pause(@PathParam("location") String location) {
+		System.out.println(location + " -> pause");
 		Optional<String> result = kodiService.pausePlayer(findMediaplayer(location));
 		return new Gson().toJson(createResponse(result));
 	}
@@ -28,6 +29,7 @@ public class KodiResource {
 	@PUT
 	@Path("resume/{location}")
 	public String resume(@PathParam("location") String location) {
+		System.out.println(location + " -> resume");
 		Optional<String> result = kodiService.resumePlayer(findMediaplayer(location));
 		return new Gson().toJson(createResponse(result));
 	}
@@ -35,6 +37,7 @@ public class KodiResource {
 	@PUT
 	@Path("stop/{location}")
 	public String stop(@PathParam("location") String location) {
+		System.out.println(location + " -> stop");
 		Optional<String> result = kodiService.stopPlayer(findMediaplayer(location));
 		return new Gson().toJson(createResponse(result));
 	}
@@ -48,8 +51,9 @@ public class KodiResource {
 	}
 
 	@PUT
-	@Path("clear")
+	@Path("clear/{location}")
 	public String clear(@PathParam("location") String location) {
+		System.out.println(location + " -> clear playlist");
 		Optional<String> result = kodiService.clearPlaylist(findMediaplayer(location));
 		return new Gson().toJson(createResponse(result));
 	}
@@ -57,6 +61,7 @@ public class KodiResource {
 	@PUT
 	@Path("scan")
 	public String scan() {
+		System.out.println("scan");
 		Optional<String> result = kodiService.scanLibrary();
 		return new Gson().toJson(createResponse(result));
 	}
@@ -64,6 +69,7 @@ public class KodiResource {
 	@PUT
 	@Path("clean")
 	public String clean() {
+		System.out.println("clean");
 		Optional<String> result = kodiService.cleanLibrary();
 		return new Gson().toJson(createResponse(result));
 	}
@@ -71,6 +77,7 @@ public class KodiResource {
 	@PUT
 	@Path("reboot/{location}")
 	public String reboot(@PathParam("location") String location) {
+		System.out.println(location + " -> reboot");
 		Optional<String> result = kodiService.rebootSystem(findMediaplayer(location));
 		return new Gson().toJson(createResponse(result));
 	}
