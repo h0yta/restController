@@ -50,6 +50,14 @@ public class KodiResource {
 		return new Gson().toJson(createResponse(result));
 	}
 
+	@POST
+	@Path("queue/{location}/{item}")
+	public String queueEpisde(@PathParam("location") String location, @PathParam("item") String request) {
+		System.out.println(location + " -> " + request);
+		Optional<String> result = kodiService.queue(findMediaplayer(location), request);
+		return new Gson().toJson(createResponse(result));
+	}
+
 	@PUT
 	@Path("clear/{location}")
 	public String clear(@PathParam("location") String location) {

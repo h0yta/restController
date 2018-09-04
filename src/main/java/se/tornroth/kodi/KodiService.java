@@ -44,6 +44,11 @@ public class KodiService {
 		return kodiPlayerService.play(request);
 	}
 
+	public Optional<String> queue(Mediaplayer mediaplayer, String requestString) {
+		Request request = requestService.createRequest(mediaplayer, requestString);
+		return kodiPlayerService.queue(request);
+	}
+
 	public Optional<String> clearPlaylist(Mediaplayer mediaplayer) {
 		return kodiPlaylistService.clearPlaylist(mediaplayer);
 	}

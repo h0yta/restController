@@ -66,6 +66,15 @@ public class KodiPlayerService extends AbstractKodiService {
 		}
 	}
 
+	public Optional<String> queue(Request request) {
+		if (request.getType() == RequestType.MOVIE) {
+			return Optional.empty();
+		} else {
+			List<Episode> episodes = kodiLibaryService.findEpisodes(request);
+			return Optional.ofNullable(sendQueueEpisodes(episodes));
+		}
+	}
+
 	private List<Player> findActivePlayers(List<Mediaplayer> mediaplayers) {
 		String activePlayersPaylod = "{\"jsonrpc\": \"2.0\", \"method\": \"Player.GetActivePlayers\", \"id\": \"kodiService\"}";
 		return mediaplayers.stream().map(mediaplayer -> {
@@ -103,7 +112,7 @@ public class KodiPlayerService extends AbstractKodiService {
 			return "Empty";
 		}
 
-		// This looks strange, but thereb is a bug in kodi.
+		// This looks strange, but there is a bug in kodi.
 		// So if the playlist is cleared and all episodes are added to playlist
 		// the menu will be shown while playing the first episode.
 		// this doesn't happen if the playlist is cleared and one episode is
@@ -118,6 +127,16 @@ public class KodiPlayerService extends AbstractKodiService {
 		}
 
 		return playresult;
+	}
+
+	private String sendQueueEpisodes(List<Episode> episodes) {
+		if (episodes.isEmpty()) {
+			return "Empty";
+		}
+
+		kodiPlaylistService.addEpisodesToPlaylist(episodes);
+
+		return "Queued";
 	}
 
 	@SuppressWarnings("unused")
