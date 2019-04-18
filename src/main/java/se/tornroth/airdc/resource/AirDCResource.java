@@ -1,9 +1,11 @@
-package se.tornroth.airdc;
+package se.tornroth.airdc.resource;
 
 import javax.inject.Inject;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+
+import se.tornroth.airdc.service.AirDCService;
 
 @Path("airdc")
 public class AirDCResource {

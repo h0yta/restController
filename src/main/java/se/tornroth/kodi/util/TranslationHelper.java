@@ -1,4 +1,4 @@
-package se.tornroth.kodi;
+package se.tornroth.kodi.util;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;

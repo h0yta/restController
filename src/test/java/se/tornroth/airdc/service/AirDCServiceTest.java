@@ -1,4 +1,4 @@
-package se.tornroth.airdc;
+package se.tornroth.airdc.service;
 
 import static org.testng.Assert.assertTrue;
 
@@ -6,8 +6,9 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import se.tornroth.airdc.entity.Download;
+import se.tornroth.airdc.service.AirDCService;
 
-public class AirDCResourceTest {
+public class AirDCServiceTest {
 
 	@Test
 	public void requestIsSingleEpisode() {

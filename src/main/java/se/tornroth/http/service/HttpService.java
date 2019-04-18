@@ -1,4 +1,4 @@
-package se.tornroth.http;
+package se.tornroth.http.service;
 
 import java.io.IOException;
 

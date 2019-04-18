@@ -1,4 +1,4 @@
-package se.tornroth.kodi;
+package se.tornroth.kodi.resource;
 
 import java.util.Optional;
 
@@ -11,6 +11,7 @@ import javax.ws.rs.PathParam;
 import com.google.gson.Gson;
 
 import se.tornroth.kodi.entity.Mediaplayer;
+import se.tornroth.kodi.service.KodiService;
 
 @Path("kodi")
 public class KodiResource {
@@ -94,6 +95,13 @@ public class KodiResource {
 	@Path("translation/add/{req}/{translation}")
 	public String addTranslation(@PathParam("req") String req, @PathParam("translation") String translation) {
 		kodiService.addTranslation(req, translation);
+		return new Gson().toJson("OK");
+	}
+
+	@POST
+	@Path("episodelength/add/{req}/{episodeLength}")
+	public String addEpisodeLength(@PathParam("req") String req, @PathParam("episodeLength") Double episodeLength) {
+		kodiService.addEpisodeLength(req, episodeLength);
 		return new Gson().toJson("OK");
 	}
 

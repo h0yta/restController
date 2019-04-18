@@ -1,11 +1,11 @@
-package se.tornroth.kodi;
+package se.tornroth.kodi.service;
 
 import java.util.List;
 import java.util.Optional;
 
 import javax.inject.Inject;
 
-import se.tornroth.http.HttpService;
+import se.tornroth.http.service.HttpService;
 import se.tornroth.kodi.entity.Episode;
 import se.tornroth.kodi.entity.Mediaplayer;
 import se.tornroth.kodi.entity.Movie;

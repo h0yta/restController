@@ -1,10 +1,10 @@
-package se.tornroth.kodi;
+package se.tornroth.kodi.service;
 
 import java.util.Optional;
 
 import javax.inject.Inject;
 
-import se.tornroth.http.HttpService;
+import se.tornroth.http.service.HttpService;
 import se.tornroth.kodi.entity.Mediaplayer;
 
 public class KodiSystemService extends AbstractKodiService {

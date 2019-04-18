@@ -1,4 +1,6 @@
-package se.tornroth.kodi;
+package se.tornroth.kodi.service;
+
+import static se.tornroth.kodi.util.KodiUtils.getNoOfEpisodes;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,12 +17,15 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import se.tornroth.http.HttpService;
+import se.tornroth.http.service.HttpService;
 import se.tornroth.kodi.entity.Episode;
 import se.tornroth.kodi.entity.Mediaplayer;
 import se.tornroth.kodi.entity.Movie;
 import se.tornroth.kodi.entity.Request;
 import se.tornroth.kodi.entity.Tvshow;
+import se.tornroth.kodi.util.EpisodeLengthHelper;
+import se.tornroth.kodi.util.KodiUtils;
+import se.tornroth.kodi.util.TranslationHelper;
 
 public class KodiLibaryService extends AbstractKodiService {
 
@@ -30,7 +35,8 @@ public class KodiLibaryService extends AbstractKodiService {
 	@Inject
 	private TranslationHelper translationHelper;
 
-	private static final int NUMBER_OF_QUEUED_EPISODES = 6;
+	@Inject
+	private EpisodeLengthHelper episodeLengthHelper;
 
 	public Optional<String> scanLibrary(Mediaplayer mediaplayer) {
 		return Optional.ofNullable(sendScan(mediaplayer.getUrl()));
@@ -44,7 +50,7 @@ public class KodiLibaryService extends AbstractKodiService {
 		Optional<Tvshow> matchedTvshow = findTvShow(request);
 
 		if (matchedTvshow.isPresent()) {
-			return findEpisodes(request, matchedTvshow);
+			return findEpisodes(request, matchedTvshow.get());
 		}
 
 		System.out.println("Nothing to be played found for episode request: " + request);
@@ -81,8 +87,8 @@ public class KodiLibaryService extends AbstractKodiService {
 		return matchedTvshow;
 	}
 
-	private List<Episode> findEpisodes(Request requestedTvshow, Optional<Tvshow> matchedTvshow) {
-		List<Episode> episodes = fetchEpisodes(matchedTvshow.get());
+	private List<Episode> findEpisodes(Request requestedTvshow, Tvshow matchedTvshow) {
+		List<Episode> episodes = fetchEpisodes(matchedTvshow);
 
 		switch (requestedTvshow.getType()) {
 		case TITLE:
@@ -92,7 +98,7 @@ public class KodiLibaryService extends AbstractKodiService {
 
 			if (titleMatch.isPresent()) {
 				int index = episodes.indexOf(titleMatch.get());
-				return episodes.stream().skip(index).limit(NUMBER_OF_QUEUED_EPISODES).collect(Collectors.toList());
+				return episodes.stream().skip(index).limit(getNoOfEpisodes()).collect(Collectors.toList());
 			}
 
 			return Collections.emptyList();
@@ -103,13 +109,15 @@ public class KodiLibaryService extends AbstractKodiService {
 
 			if (specificMatch.isPresent()) {
 				int index = episodes.indexOf(specificMatch.get());
-				return episodes.stream().skip(index).limit(NUMBER_OF_QUEUED_EPISODES).collect(Collectors.toList());
+				return episodes.stream().skip(index).limit(getNoOfEpisodes()).collect(Collectors.toList());
 			}
 
 			return Collections.emptyList();
 		case RANDOM:
 			int rand = new Random().nextInt(episodes.size());
-			return episodes.stream().skip(rand).limit(NUMBER_OF_QUEUED_EPISODES).collect(Collectors.toList());
+			return episodes.stream().skip(rand)
+					.limit(getNoOfEpisodes(episodeLengthHelper.findEpisodeLength(requestedTvshow.getTitle())))
+					.collect(Collectors.toList());
 		case LATEST:
 			return episodes.stream().filter(episode -> !episode.isWatched())
 					.sorted(Comparator.comparing(Episode::getSeason).thenComparing(Episode::getEpisode).reversed())

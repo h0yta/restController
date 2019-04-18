@@ -1,4 +1,4 @@
-package se.tornroth.kodi;
+package se.tornroth.kodi.service;
 
 import java.util.Optional;
 

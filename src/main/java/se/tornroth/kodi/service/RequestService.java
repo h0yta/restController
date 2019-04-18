@@ -1,4 +1,4 @@
-package se.tornroth.kodi;
+package se.tornroth.kodi.service;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 import se.tornroth.kodi.entity.Mediaplayer;
 import se.tornroth.kodi.entity.Request;
 import se.tornroth.kodi.entity.RequestType;
+import se.tornroth.kodi.util.KodiUtils;
 
 public class RequestService {
 	public Request createRequest(Mediaplayer mediaplayer, String request) {

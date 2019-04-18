@@ -1,4 +1,4 @@
-package se.tornroth.kodi;
+package se.tornroth.kodi.service;
 
 import java.util.Optional;
 
@@ -6,6 +6,8 @@ import javax.inject.Inject;
 
 import se.tornroth.kodi.entity.Mediaplayer;
 import se.tornroth.kodi.entity.Request;
+import se.tornroth.kodi.util.EpisodeLengthHelper;
+import se.tornroth.kodi.util.TranslationHelper;
 
 public class KodiService {
 
@@ -26,6 +28,9 @@ public class KodiService {
 
 	@Inject
 	private TranslationHelper translationHelper;
+
+	@Inject
+	private EpisodeLengthHelper episodeLengthHelper;
 
 	public Optional<String> pausePlayer(Mediaplayer mediaplayer) {
 		return kodiPlayerService.pausePlayer(mediaplayer);
@@ -67,5 +72,9 @@ public class KodiService {
 
 	public void addTranslation(String req, String translation) {
 		translationHelper.addTranslation(req, translation);
+	}
+
+	public void addEpisodeLength(String req, Double episodeLength) {
+		episodeLengthHelper.addEpisodeLength(req, episodeLength);
 	}
 }
