@@ -70,21 +70,15 @@ public class KodiLibaryService extends AbstractKodiService {
 	}
 
 	private Optional<Tvshow> findTvShow(Request request) {
-		Optional<Tvshow> matchedTvshow = fetchTvShows(request.getMediaplayer()).stream().filter(tvshow -> {
+		return fetchTvShows(request.getMediaplayer()).stream().filter(tvshow -> {
 			if (KodiUtils.simularEnough(request.getTitle(), tvshow.getTitle())) {
 				return true;
 			}
 
 			Optional<String> optTitle = translationHelper.translateTitle(request.getTitle());
 
-			if (optTitle.isPresent()) {
-				return KodiUtils.simularEnough(optTitle.get(), tvshow.getTitle());
-			}
-
-			return false;
+			return optTitle.filter(s -> KodiUtils.simularEnough(s, tvshow.getTitle())).isPresent();
 		}).findFirst();
-
-		return matchedTvshow;
 	}
 
 	private List<Episode> findEpisodes(Request requestedTvshow, Tvshow matchedTvshow) {

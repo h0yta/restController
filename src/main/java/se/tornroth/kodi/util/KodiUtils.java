@@ -2,6 +2,7 @@ package se.tornroth.kodi.util;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 import info.debatty.java.stringsimilarity.NormalizedLevenshtein;
 
@@ -53,16 +54,20 @@ public class KodiUtils {
 	}
 
 	public static Integer getNoOfEpisodes(final Double episodeLength) {
-		return getNoOfEpisodes(LocalDate.now().getDayOfWeek(), episodeLength);
+		return getNoOfEpisodes(LocalDate.now().getDayOfWeek(), LocalTime.now().getHour(), episodeLength);
 	}
 
-	static Integer getNoOfEpisodes(final DayOfWeek weekDay, final Double episodeLength) {
-		final Integer playtime = getPlaytimeBasedOnWeekday(weekDay);
-		final Double ceiled = Math.ceil(playtime.doubleValue() / episodeLength.doubleValue());
-		return ceiled.intValue();
+	static Integer getNoOfEpisodes(final DayOfWeek weekDay, final int hour, final Double episodeLength) {
+		final Integer playtime = getPlaytimeBasedOnWeekday(weekDay, hour);
+		final Double ceil = Math.ceil(playtime.doubleValue() / episodeLength);
+		return ceil.intValue();
 	}
 
-	static Integer getPlaytimeBasedOnWeekday(final DayOfWeek weekDay) {
+	private static Integer getPlaytimeBasedOnWeekday(final DayOfWeek weekDay, final int hour) {
+		if (hour < 9) {
+			return 60;
+		}
+
 		switch (weekDay) {
 		case MONDAY:
 		case TUESDAY:
@@ -70,11 +75,10 @@ public class KodiUtils {
 		case THURSDAY:
 			return 30;
 		case FRIDAY:
-			return 20;
 		case SATURDAY:
 		case SUNDAY:
 		default:
-			return 60;
+			return 20;
 		}
 	}
 }

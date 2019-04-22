@@ -110,10 +110,7 @@ public class KodiResource {
 	}
 
 	private String createResponse(Optional<String> result) {
-		if (result.isPresent()) {
-			return result.get();
-		}
+		return result.orElse("Error");
 
-		return "Error";
 	}
 }
