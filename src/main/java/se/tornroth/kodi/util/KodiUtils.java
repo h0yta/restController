@@ -15,7 +15,12 @@ public class KodiUtils {
 	public static double calculateSimularity(String requested, String tvshow) {
 		final NormalizedLevenshtein l = new NormalizedLevenshtein();
 		final double sim = l.distance(requested.toLowerCase(), tvshow.toLowerCase());
-		return (1.0d - sim);
+		final double stripSim = l.distance(stripWords(requested.toLowerCase()), stripWords(tvshow.toLowerCase()));
+		return (1.0d - Math.min(sim, stripSim));
+	}
+
+	private static String stripWords(String s) {
+		return s.replaceAll("\\b(the|a)\\b", "").trim();
 	}
 
 	public static String stripRequest(String request) {
@@ -25,7 +30,8 @@ public class KodiUtils {
 				.replace("latest", "")//
 				.replace("next episode of", "")//
 				.replace("next episode", "")//
-				.replace("next", "").replace("random episode of", "")//
+				.replace("next", "")//
+				.replace("random episode of", "")//
 				.replace("random episode", "")//
 				.replace("random", "")//
 				.replace("episode", "")//

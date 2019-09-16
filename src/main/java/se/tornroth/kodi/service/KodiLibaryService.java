@@ -76,7 +76,6 @@ public class KodiLibaryService extends AbstractKodiService {
 			}
 
 			Optional<String> optTitle = translationHelper.translateTitle(request.getTitle());
-
 			return optTitle.filter(s -> KodiUtils.simularEnough(s, tvshow.getTitle())).isPresent();
 		}).findFirst();
 	}

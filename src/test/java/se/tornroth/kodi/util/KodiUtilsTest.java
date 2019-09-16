@@ -5,24 +5,46 @@ import static java.time.DayOfWeek.MONDAY;
 import static java.time.DayOfWeek.SATURDAY;
 import static java.time.DayOfWeek.THURSDAY;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Test;
 
+import javax.validation.constraints.AssertFalse;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class KodiUtilsTest {
 
 	@Test
-	public void simularEnough() {
+	public void simularEnough_series() {
 		assertTrue(KodiUtils.simularEnough("grizzly and the Lemmings", "Grizzy & the lemmings"));
 	}
 
 	@Test
-	public void calculateSimularity() {
+	public void simularEnough_movies() {
+		assertTrue(KodiUtils.simularEnough("Sixth sense", "The Sixth Sense"));
+        assertFalse(KodiUtils.simularEnough("Die Hard 2", "Die hard"));
+	}
+
+	@Test
+	public void calculateSimularity_series() {
 		assertEquals(KodiUtils.calculateSimularity("grizzly and the Lemmings", "Grizzy & the lemmings"),
 				0.8333333333333334d);
+	}
+
+	@Test
+	public void calculateSimularity_movies() {
+		assertEquals(KodiUtils.calculateSimularity("Sixth sense", "The Sixth Sense"),
+				1.0d);
+		assertEquals(KodiUtils.calculateSimularity("Night to remember", "A night to remember"),
+				1.0d);
+		assertEquals(KodiUtils.calculateSimularity("Team", "The A Team"),
+				1.0d);
+        assertEquals(KodiUtils.calculateSimularity("Die hard 2", "Die hard"),
+                0.8d);
+        assertEquals(KodiUtils.calculateSimularity("Die hard", "Die hard 2"),
+                0.8d);
 	}
 
 	@Test
